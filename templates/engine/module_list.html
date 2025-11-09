@@ -35,6 +35,8 @@
                     {% csrf_token %}
                     <button type="submit">Upgrade</button>
                 </form>
+
+                <a target="_blank" href="{% url module.slug|add:':list' %}" style="margin-left:10px;">Go to {{ module.name }}</a>
             {% else %}
                 <strong>Not Active</strong> 
                 <form method="get" action="{% url 'install_module' module.slug %}" style="display:inline;">

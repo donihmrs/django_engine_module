@@ -1,13 +1,22 @@
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
+from engine.module_loader import render_module_template
 from .models import Product
 
 def handle_request(request):
     return JsonResponse({"status":"success", "message": "Product module active!"})
 
-def list_product(request):
+def list_product_backup(request):
+    # Cara render module template ini akan memperlambat sedikit prosesnya
     product = Product.objects.all().values('name', 'barcode', 'price', 'stock')
-    return render(request, 'page/list.html', {'products': product})
+    html = render_module_template('product', 'page/list.html', {'products': product})
+    
+    return HttpResponse(html)
+
+def list_product(request):
+    # Cara render module template ini akan memperlambat sedikit prosesnya
+    product = Product.objects.all().values('name', 'barcode', 'price', 'stock')
+    return render(request, 'product/templates/page/list.html', {'products': product})
     
 def index(request):
     return JsonResponse({"status":"success", "message": "Welcome to the Product Module"})  

@@ -1,4 +1,4 @@
-import importlib, os
+import importlib, os, sys
 from django.core.management import call_command
 from django.conf import settings
 from django.apps import apps, AppConfig
@@ -48,27 +48,31 @@ def load_active_modules():
     try :
         print("Loading all modules...")
         from engine.models import Module
+        import sys
 
         active_modules = Module.objects.filter(is_active=True)
         for mod in active_modules:
             try:
-                print(f"Loading module: {mod.slug}")
-                importlib.import_module(f"modules.{mod.slug}.views")
-                importlib.import_module(f"modules.{mod.slug}.urls")
-
                 full_module_path = f"modules.{mod.slug}"
                 print(f"Adding module to INSTALLED_APPS: {full_module_path}")
-                # 1 Tambahkan ke INSTALLED_APPS secara dinamis
+
+                # Tambahkan ke INSTALLED_APPS secara dinamis
                 if full_module_path not in settings.INSTALLED_APPS:
                     settings.INSTALLED_APPS.append(full_module_path)
                     print(f"{full_module_path} added to INSTALLED_APPS")
-                
+
+                # Reload modules views, urls, models
+                reload_modules(mod.slug)
+        
                 print(f"Loaded module: {mod.name}")
             except ModuleNotFoundError as e:
                 print(f"Module {mod.slug} not found in /modules folder: {e}")
                 return False
             
+        apps.set_installed_apps(settings.INSTALLED_APPS)
         reload_dynamic_urls()
+
+        reload_templates()
     except Exception as e:
         print(f"Error loading modules: {e}")
         return False
@@ -173,7 +177,6 @@ def reload_dynamic_urls():
 
     return True
 
-
 def reload_dynamic_apps(full_path: str, module_name: str):
     module = importlib.import_module(full_path)
 
@@ -208,8 +211,8 @@ def reload_dynamic_apps(full_path: str, module_name: str):
     apps.set_installed_apps(settings.INSTALLED_APPS)
 
     try:
-        models_module = importlib.import_module(f"{full_path}.models")
-        importlib.reload(models_module)
+        # Reload modules views, urls, models
+        reload_modules(module_name)
 
         if apps.is_installed(full_path):
             print(f"Running makemigrations + migrate for {module_name}")
@@ -221,3 +224,67 @@ def reload_dynamic_apps(full_path: str, module_name: str):
         print(f"Reloaded models for {module_name}")
     except ModuleNotFoundError:
         print(f"No models.py for {module_name}, skipping models reload")
+
+def reload_templates():
+    try :
+        print("Reloading template loaders...")
+        from django.template import engines
+
+        for engine in engines.all():
+            if hasattr(engine, 'engine') and hasattr(engine.engine, 'template_loaders'):
+                for loader in engine.engine.template_loaders:
+                    if hasattr(loader, 'reset'):
+                        loader.reset()
+    except Exception as e:
+        print(f"Error resetting template loaders: {e}")
+
+def reload_modules(module_name: str):
+    try: 
+        module_path_urls = f"modules.{module_name}.urls"
+        module_path_models = f"modules.{module_name}.models"
+        module_path_views = f"modules.{module_name}.views"
+
+        if module_path_views in sys.modules:
+            # reload modul yang sudah di-import
+            importlib.reload(sys.modules[module_path_views])
+        else:
+            # import modul pertama kali
+            importlib.import_module(module_path_views)
+
+        if module_path_urls in sys.modules:
+            importlib.reload(sys.modules[module_path_urls])
+        else:
+            importlib.import_module(module_path_urls)
+
+        if module_path_models in sys.modules:
+            importlib.reload(sys.modules[module_path_models])
+        else:
+            importlib.import_module(module_path_models)
+
+        return True
+    except ModuleNotFoundError as e:
+        print(f"Module {module_name} not found in /modules folder: {e}")
+        return False
+    
+
+def render_module_template(module_name: str, template_name: str, context: dict):
+    from django.template import Engine, Context, TemplateDoesNotExist
+
+    module_templates_dir = Path(settings.BASE_DIR) / "modules" / module_name / "templates"
+    
+    print(f"Rendering template from: {module_templates_dir} - {template_name}")
+    # Buat template engine sementara khusus modul
+    engine = Engine(
+        loaders=[
+            ('django.template.loaders.filesystem.Loader', [str(module_templates_dir)]),
+        ],
+        debug=settings.DEBUG,
+    )
+    
+    try:
+        template = engine.get_template(template_name)
+    except TemplateDoesNotExist as e:
+        print(f"TemplateDoesNotExist: {e}")
+        raise TemplateDoesNotExist(f"Template '{template_name}' not found in {module_templates_dir}")
+    
+    return template.render(Context(context))

@@ -1,6 +1,7 @@
 {% extends "admin/base.html" %}
 
-{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}
+{% endblock %}
 
 {% block branding %}
 <div id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></div>
@@ -9,4 +10,6 @@
 {% endif %}
 {% endblock %}
 
-{% block nav-global %}{% endblock %}
+{% block nav-global %}
+<a href="{% url 'view_all_modules' %}" ><button class="btn btn-primary"> View All Modules</button></a>
+{% endblock %}
