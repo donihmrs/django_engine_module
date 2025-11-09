@@ -1,0 +1,8 @@
+{
+  "name": "Product Module",
+  "slug": "product",
+  "version": "1.0.0",
+  "author": "DoniHmrs",
+  "description": "Module untuk mengelola produk",
+  "dependencies": []
+}

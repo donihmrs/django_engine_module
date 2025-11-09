@@ -1,0 +1,10 @@
+.qodo
+managed_context
+*.sqlite3
+*.pyc
+__pycache__/
+.env
+test_suite_analysis
+.vscode/
+migrations/
+venv

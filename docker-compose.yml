@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+  django_engmodule_doni:
+    build: .
+    container_name: django_engmodule_doni
+    environment:
+      DEBUG: False
+      SECRET_KEY: KEYRAHASIAKELUARGA12345@@@
+      DB_NAME: django-engine-module
+      DB_USER: root
+      DB_PASSWORD: engmodule-doni-999
+      DB_HOST: db_engmodule_doni
+      DB_PORT: 3306
+    depends_on:
+      - db_engmodule_doni
+    networks:
+      - engine_module_doni_network
+    ports:
+      - "8890:8000"
+    restart: always
+
+  db_engmodule_doni:
+    image: mariadb:latest
+    container_name: django-engine-module
+    environment:
+      MYSQL_ROOT_PASSWORD: engmodule-doni-999
+      MYSQL_DATABASE: django-engine-module
+      MYSQL_USER: engmodule_user
+      MYSQL_PASSWORD: engmodule-doni-999
+    volumes:
+      - mariadb_engmodule_doni_data:/var/lib/mysql
+    networks:
+      - engine_module_doni_network
+    ports:
+      - "3308:3306"
+    restart: unless-stopped
+
+volumes:
+  mariadb_engmodule_doni_data:
+
+networks:
+  engine_module_doni_network:
+    driver: bridge
+    name: engine_module_doni_network

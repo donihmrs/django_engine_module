@@ -1,0 +1,48 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('RBAC site admin') }}{% endblock %}
+
+{% block branding %}
+<div id="site-name"><a href="{% url 'admin:index' %}">List Modules</a></div>
+{% if user.is_anonymous %}
+  {% include "admin/color_theme_toggle.html" %}
+{% endif %}
+{% endblock %}
+
+{% block nav-global %}
+<p style="color: #888;"></p>
+{% endblock %}
+
+{% block content %}
+<h1>List Modules</h1>
+<form method="get" action="{% url 'reload_modules' %}">
+    {% csrf_token %}
+    <button type="submit">Reload Modules</button>
+</form> 
+
+<ul>
+    {% for module in modules %}
+        <li>
+            {{ module.name }} - {{ module.version }} - {{ module.description }}
+            {% if module.is_active %}
+                <strong>Active</strong> 
+                <form method="get" action="{% url 'uninstall_module' module.slug %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Uninstall</button>
+                </form>
+
+                <form method="get" action="{% url 'upgrade_module' module.slug %}" style="display:inline; margin-left:10px;">
+                    {% csrf_token %}
+                    <button type="submit">Upgrade</button>
+                </form>
+            {% else %}
+                <strong>Not Active</strong> 
+                <form method="get" action="{% url 'install_module' module.slug %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Install</button>
+                </form>
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}
