@@ -1,6 +1,8 @@
 import json
+from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render
+from django.contrib import messages
+from django.shortcuts import redirect, render
 from engine.module_loader import render_module_template
 from engine.views import load_permissions
 from .models import Product
@@ -8,15 +10,41 @@ from .models import Product
 name_module = "product"
 
 def index(request):
-    get_permissions = json.loads(load_permissions(request, name_module).content)
+    flagLogin = True
+    if not request.user.is_authenticated:
+        flagLogin = False
+        get_permissions = {}
+    else :
+        get_permissions = json.loads(load_permissions(request, name_module).content)
 
-    return render(request, 'product/templates/page/index.html', {'user_permissions': get_permissions})
+    return render(request, 'product/templates/page/index.html', {'user_permissions': get_permissions, 'flagLogin': flagLogin})
+def login_auth(request):
+    print("Login attempt received")
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        print(f"Attempting login for user: {username}")
+
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            messages.success(request, f"Welcome, {user.username}!")
+            return redirect('product:index')
+        else:
+            messages.error(request, "Invalid username or password.")
+
+    return redirect('product:index')
+
+def logout_auth(request):
+    logout(request)
+    messages.info(request, "You have been logged out.")
+    return redirect('product:index')
 
 def list_product(request):
-    get_permissions = json.loads(load_permissions(request).content)
+    get_permissions = json.loads(load_permissions(request, name_module).content)
 
-    if not get_permissions.get('can_view', False):
-        return JsonResponse({"status":"error", "message": "Not authorized"}, status=403)
+    if get_permissions.get('can_view') is False:
+        return redirect('product:index')
     
     product = Product.objects.all().values('name', 'barcode', 'price', 'stock')
     return render(request, 'product/templates/page/list.html', {'products': product})

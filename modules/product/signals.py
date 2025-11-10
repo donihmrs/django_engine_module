@@ -70,10 +70,10 @@ def create_roles(sender, **kwargs):
                     'group': manager_group,
                 },
                 {
-                    'username': 'staff',
-                    'first_name': 'Staff',
+                    'username': 'user',
+                    'first_name': 'User',
                     'last_name': 'TokoCoding',
-                    'email': 'staff@tokocoding.com',
+                    'email': 'user@tokocoding.com',
                     'password': 'password123',
                     'group': user_group,
                 },

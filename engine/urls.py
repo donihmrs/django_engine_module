@@ -1,7 +1,8 @@
 from django.urls import path
-from engine.views import install_module, uninstall_module, uninstall_module, upgrade_module, reload_modules, view_all_modules
+from engine.views import install_module, uninstall_module, uninstall_module, upgrade_module, reload_modules, view_all_modules, home
 
 urlpatterns = [
+    path('', home, name='home'),
     path('reload-modules', reload_modules, name='reload_modules'),
     path('module', view_all_modules, name='view_all_modules'),
     path('install-module/<slug:module_slug>', install_module, name='install_module'),
