@@ -9,7 +9,8 @@ app_name = 'product'
 
 urlpatterns = [
     path('', redirect_to_home),
-    path('index/', views.list_product, name='list'),
+    path('index/', views.index, name='index'),
+    path('list/', views.list_product, name='list'),
     path('create/', views.create_product, name='create'),
     path('update/<int:id>/', views.update_product, name='update'),
     path('delete/<int:id>/', views.delete_product, name='delete'),

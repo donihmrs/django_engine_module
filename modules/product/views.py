@@ -1,10 +1,14 @@
+import json
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from engine.module_loader import render_module_template
+from engine.views import load_permissions
 from .models import Product
 
-def handle_request(request):
-    return JsonResponse({"status":"success", "message": "Product module active!"})
+def index(request):
+    get_permissions = json.loads(load_permissions(request).content)
+
+    return render(request, 'product/templates/page/index.html', {'user_permissions': get_permissions})
 
 def list_product_backup(request):
     # Cara render module template ini akan memperlambat sedikit prosesnya
@@ -14,23 +18,28 @@ def list_product_backup(request):
     return HttpResponse(html)
 
 def list_product(request):
-    # Cara render module template ini akan memperlambat sedikit prosesnya
+    get_permissions = json.loads(load_permissions(request).content)
+
+    if not get_permissions.get('can_view', False):
+        return JsonResponse({"status":"error", "message": "Not authorized"}, status=403)
+    
     product = Product.objects.all().values('name', 'barcode', 'price', 'stock')
     return render(request, 'product/templates/page/list.html', {'products': product})
-    
-def index(request):
-    return JsonResponse({"status":"success", "message": "Welcome to the Product Module"})  
 
 def detail(request, id):
     try:
-        product = Product.objects.get(id=id)
-        data = {
-            "name": product.name,
-            "barcode": product.barcode,
-            "price": str(product.price),
-            "stock": product.stock,
-        }
-        return JsonResponse(data)
+        if request.method == 'GET':
+            product = Product.objects.get(id=id)
+            data = {
+                "name": product.name,
+                "barcode": product.barcode,
+                "price": str(product.price),
+                "stock": product.stock,
+            }
+            return JsonResponse(data)
+        
+        return JsonResponse({"status":"error", "message": "Invalid request method"}, status=400)
+
     except Product.DoesNotExist:
         return JsonResponse({"status":"error", "message": "Product not found"}, status=404)
     

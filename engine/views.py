@@ -6,6 +6,20 @@ from engine.module_loader import get_available_modules, load_active_modules, set
 from engine.models.module import Module
 from pathlib import Path 
 
+def load_permissions(request):
+    user = request.user
+
+    if user.is_superuser:
+        return JsonResponse({'can_view': True, 'can_add': True, 'can_change': True, 'can_delete': True})
+    
+    # Cek permission user
+    can_view = user.has_perm("modules.product.view_module_product")
+    can_add = user.has_perm("modules.product.add_module_product")
+    can_change = user.has_perm("modules.product.change_module_product")
+    can_delete = user.has_perm("modules.product.delete_module_product")
+
+    return JsonResponse({'can_view': can_view, 'can_add': can_add, 'can_change': can_change, 'can_delete': can_delete})
+
 def reload_modules(request):
     if not request.user.is_superuser:
         return JsonResponse({"status":"error", "message": "Not authorized"}, status=403)

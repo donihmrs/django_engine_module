@@ -1,0 +1,15 @@
+{% extends "product/templates/layout/base.html" %}
+{% block content %}
+<h1 class="mb-3">Dashboard Product Module</h1>
+
+Tampilkan juga permissions yang dimiliki user saat ini:
+
+<h2 class="mt-5">User Permissions</h2>
+<ul>
+    {% for key, value in user_permissions.items %}
+    <li>{{ key }}: {{ value }}</li>
+    {% endfor %}
+</ul>
+
+
+{% endblock %}

@@ -15,23 +15,15 @@
 
         <!-- Sidebar -->
         <div class="border-end bg-light" id="sidebar-wrapper">
-            <div class="sidebar-heading text-center py-4 fw-bold">Manage Product</div>
+            <a href="{% url 'product:index' %}"><div class="sidebar-heading text-center py-4 fw-bold">Manage Product</div></a>
             <div class="list-group list-group-flush">
                 <a href="{% url 'product:list' %}" class="list-group-item list-group-item-action bg-light">Products</a>
-                <a href="#" class="list-group-item list-group-item-action bg-light">Orders</a>
-                <a href="#" class="list-group-item list-group-item-action bg-light">Customers</a>
-                <a href="#" class="list-group-item list-group-item-action bg-light">Settings</a>
             </div>
         </div>
         <!-- /#sidebar-wrapper -->
 
         <!-- Page Content -->
         <div id="page-content-wrapper" class="flex-grow-1">
-            <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-                <div class="container-fluid">
-                    <button class="btn btn-primary" id="sidebarToggle">Toggle Sidebar</button>
-                </div>
-            </nav>
 
             <main class="container-fluid mt-4">
                 {% block content %}

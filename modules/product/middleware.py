@@ -12,6 +12,9 @@ def process_view(request, view_func, view_args, view_kwargs):
     if not user.is_authenticated:
         return JsonResponse({'error': 'Authentication required'}, status=401)
 
+    if user.is_superuser:
+        return None  # Superuser punya akses penuh
+    
     # Mapping method -> permission
     if request.method in SAFE_METHODS:
         perm_code = 'modules.product.view_module_product'
