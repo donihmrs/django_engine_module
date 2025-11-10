@@ -12,6 +12,7 @@ services:
       DB_PASSWORD: engmodule-doni-999
       DB_HOST: db_engmodule_doni
       DB_PORT: 3306
+      ALLOWED_HOSTS: '*'
     depends_on:
       - db_engmodule_doni
     networks:
