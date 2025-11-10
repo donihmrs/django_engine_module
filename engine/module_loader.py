@@ -85,7 +85,7 @@ def load_active_modules():
 def get_dynamic_urls():    
     if settings.START_APP_ON_LOAD:
         print("Initial app loading, setting up installed apps...")
-        
+
         apps.set_installed_apps(settings.INSTALLED_APPS)
         settings.START_APP_ON_LOAD = False
 
@@ -250,15 +250,16 @@ def reload_templates():
 
 def reload_modules(module_name: str):
     try: 
+        print(f"Reloading module components for: {module_name}")
+
         module_path_urls = f"modules.{module_name}.urls"
         module_path_models = f"modules.{module_name}.models"
         module_path_views = f"modules.{module_name}.views"
+        module_path_middleware = f"modules.{module_name}.middleware"
 
         if module_path_views in sys.modules:
-            # reload modul yang sudah di-import
             importlib.reload(sys.modules[module_path_views])
         else:
-            # import modul pertama kali
             importlib.import_module(module_path_views)
 
         if module_path_urls in sys.modules:
@@ -270,6 +271,24 @@ def reload_modules(module_name: str):
             importlib.reload(sys.modules[module_path_models])
         else:
             importlib.import_module(module_path_models)
+
+        if module_path_middleware in sys.modules:
+            importlib.reload(sys.modules[module_path_middleware])
+        else:
+            try:
+                mod = importlib.import_module(module_path_middleware)
+
+                for attr_name in dir(mod):
+                    attr = getattr(mod, attr_name)
+                    if isinstance(attr, type) and attr_name.endswith("Middleware"):
+                        middleware_path = f"{module_path_middleware}.{attr_name}"
+                        if middleware_path not in settings.MIDDLEWARE:
+                            settings.MIDDLEWARE.append(middleware_path)
+                            print(f"Middleware loaded: {middleware_path}")
+            except ModuleNotFoundError:
+                print(f"No middleware.py found for module: {module_name}, skipping middleware load")
+
+
 
         return True
     except ModuleNotFoundError as e:

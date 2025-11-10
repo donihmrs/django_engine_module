@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from engine.module_loader import get_dynamic_urls  
-                
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('engine.urls')),

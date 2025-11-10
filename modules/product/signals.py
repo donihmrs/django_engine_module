@@ -10,7 +10,7 @@ User = get_user_model()
 
 @receiver(post_migrate)
 def create_roles(sender, **kwargs):
-    if sender.name == 'product': 
+    if sender.name == 'modules.product': 
         # Role: manager, user, public
         try:
             # === Pastikan tabel sudah ada ===
