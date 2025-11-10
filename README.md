@@ -59,4 +59,4 @@ docker compose up --build
 
 ## License
 
-This project is provided as-is for demonstration purposes.
+This project is provided as-is for demonstration purposes by DoniHMRs
