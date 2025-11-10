@@ -20,31 +20,54 @@
     <button type="submit">Reload Modules</button>
 </form> 
 
-<ul>
-    {% for module in modules %}
-        <li>
-            {{ module.name }} - {{ module.version }} - {{ module.description }}
-            {% if module.is_active %}
-                <strong>Active</strong> 
-                <form method="get" action="{% url 'uninstall_module' module.slug %}" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit">Uninstall</button>
-                </form>
+<br>
+<!-- List of modules in table format -->
 
-                <form method="get" action="{% url 'upgrade_module' module.slug %}" style="display:inline; margin-left:10px;">
-                    {% csrf_token %}
-                    <button type="submit">Upgrade</button>
-                </form>
+<table class="table table-striped table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Name</th>
+            <th>Version</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for module in modules %}
+        <tr>
+            <td>{{ module.name }}</td>
+            <td>{{ module.version }}</td>
+            <td>{{ module.description }}</td>
+            <td>
+                {% if module.is_active %}
+                    <span class="badge bg-success">Active</span>
+                {% else %}
+                    <span class="badge bg-secondary">Not Active</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if module.is_active %}
+                    <form method="get" action="{% url 'uninstall_module' module.slug %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-danger">Uninstall</button>
+                    </form>
 
-                <a target="_blank" href="{% url module.slug|add:':index' %}" style="margin-left:10px;">Go to {{ module.name }}</a>
-            {% else %}
-                <strong>Not Active</strong> 
-                <form method="get" action="{% url 'install_module' module.slug %}" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit">Install</button>
-                </form>
-            {% endif %}
-        </li>
-    {% endfor %}
-</ul>
+                    <form method="get" action="{% url 'upgrade_module' module.slug %}" style="display:inline; margin-left:10px;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-warning">Upgrade</button>
+                    </form>
+
+                    <a target="_blank" href="{% url module.slug|add:':index' %}" class="btn btn-sm btn-info" style="margin-left:10px;">Access {{ module.name }}</a>
+                {% else %}
+                    <form method="get" action="{% url 'install_module' module.slug %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-success">Install</button>
+                    </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}

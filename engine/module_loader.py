@@ -276,15 +276,7 @@ def reload_modules(module_name: str):
             importlib.reload(sys.modules[module_path_middleware])
         else:
             try:
-                mod = importlib.import_module(module_path_middleware)
-
-                for attr_name in dir(mod):
-                    attr = getattr(mod, attr_name)
-                    if isinstance(attr, type) and attr_name.endswith("Middleware"):
-                        middleware_path = f"{module_path_middleware}.{attr_name}"
-                        if middleware_path not in settings.MIDDLEWARE:
-                            settings.MIDDLEWARE.append(middleware_path)
-                            print(f"Middleware loaded: {middleware_path}")
+                importlib.import_module(module_path_middleware)
             except ModuleNotFoundError:
                 print(f"No middleware.py found for module: {module_name}, skipping middleware load")
 

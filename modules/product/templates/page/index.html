@@ -1,8 +1,18 @@
 {% extends "product/templates/layout/base.html" %}
-{% block content %}
-<h2 class="mb-3">Dashboard Product Module</h2>
 
+{% block title %}
+  Dashboard
+{% endblock %}
+
+{% block content %}
 {% if flagLogin %}
+    <div class="col-md-2 col-sm-6">
+      <div class="card shadow p-4">
+        <h4 class="mb-3">Total Products</h4>
+        <h2>{{ total_products }}</h2>
+      </div>
+    </div>
+    
     <h2 class="mt-5">User Permissions</h2>
     <ul>
         {% for key, value in user_permissions.items %}
@@ -10,27 +20,23 @@
         {% endfor %}
     </ul>
 {% else %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-      <div class="col-md-4">
-        <div class="card shadow p-4">
-          <h4 class="mb-3 text-center">Anda harus login terlebih dahulu untuk melanjutkan</h4>
+<div class="col-md-4">
+  <div class="card shadow p-4">
+    <h4 class="mb-3 text-center">Anda harus login terlebih dahulu untuk melanjutkan</h4>
 
-          <form method="post" action="{% url 'product:login_auth' %}">
-            {% csrf_token %}
-            <div class="mb-3">
-              <label>Username</label>
-              <input type="text" name="username" class="form-control" required>
-            </div>
-            <div class="mb-3">
-              <label>Password</label>
-              <input type="password" name="password" class="form-control" required>
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Login</button>
-          </form>
-        </div>
+    <form method="post" action="{% url 'product:login_auth' %}">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label>Username</label>
+        <input type="text" name="username" class="form-control" required>
       </div>
-    </div>
+      <div class="mb-3">
+        <label>Password</label>
+        <input type="password" name="password" class="form-control" required>
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Login</button>
+    </form>
+  </div>
 </div>
 {% endif %}
 

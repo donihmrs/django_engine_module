@@ -11,13 +11,16 @@ name_module = "product"
 
 def index(request):
     flagLogin = True
+    count_products = 0
+
     if not request.user.is_authenticated:
         flagLogin = False
         get_permissions = {}
     else :
         get_permissions = json.loads(load_permissions(request, name_module).content)
+        count_products = Product.objects.count()
 
-    return render(request, 'product/templates/page/index.html', {'user_permissions': get_permissions, 'flagLogin': flagLogin})
+    return render(request, 'product/templates/page/index.html', {'user_permissions': get_permissions, 'flagLogin': flagLogin , 'total_products': count_products})
 def login_auth(request):
     print("Login attempt received")
     if request.method == 'POST':

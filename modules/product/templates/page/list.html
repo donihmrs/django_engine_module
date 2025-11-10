@@ -1,12 +1,17 @@
 {% extends "product/templates/layout/base.html" %}
-{% block content %}
-<h2 class="mb-3">Products List</h2>
-<!-- Create button to add new product with modal form -->
-{% if user_permissions.can_add %}
-    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addProductModal">
+{% block title %}
+  Products List
+
+  {% if user_permissions.can_add %}
+  <div class="justify-content-end">
+    <button type="button" class="btn btn-primary mb-2 mt-2 btn-sm" data-bs-toggle="modal" data-bs-target="#addProductModal">
         Add New Product
     </button>
-{% endif %}
+  </div>
+  {% endif %}
+{% endblock %}
+{% block content %}
+<!-- Create button to add new product with modal form -->
 
 <table class="table table-striped table-bordered">
     <thead class="table-dark">
@@ -123,7 +128,7 @@
       </div>
       <div class="modal-body">
         <input type="hidden" id="deleteProductId" name="product_id">
-        <p>Are you sure you want to delete this product?</p>
+        <p>Are you sure to delete this data?</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>

@@ -23,7 +23,7 @@ RUN pip install --upgrade pip && \
 COPY . .
 
 # (Opsional) Jalankan migrate di runtime, bukan di build
-CMD ["sh", "-c", "python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000"]
+CMD ["sh", "-c", "python3 manage.py makemigrations engine && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000 --noreload"]
 
 # Expose port Django
 EXPOSE 8000
