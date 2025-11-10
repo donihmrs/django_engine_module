@@ -17,7 +17,7 @@ services:
     networks:
       - engine_module_doni_network
     ports:
-      - "8890:8000"
+      - "8892:8000"
     restart: always
 
   db_engmodule_doni:
@@ -33,7 +33,7 @@ services:
     networks:
       - engine_module_doni_network
     ports:
-      - "3308:3306"
+      - "127.0.0.1:3310:3306"
     restart: unless-stopped
 
 volumes:
