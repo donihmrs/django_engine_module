@@ -5,17 +5,12 @@ from engine.module_loader import render_module_template
 from engine.views import load_permissions
 from .models import Product
 
+name_module = "product"
+
 def index(request):
-    get_permissions = json.loads(load_permissions(request).content)
+    get_permissions = json.loads(load_permissions(request, name_module).content)
 
     return render(request, 'product/templates/page/index.html', {'user_permissions': get_permissions})
-
-def list_product_backup(request):
-    # Cara render module template ini akan memperlambat sedikit prosesnya
-    product = Product.objects.all().values('name', 'barcode', 'price', 'stock')
-    html = render_module_template('product', 'page/list.html', {'products': product})
-    
-    return HttpResponse(html)
 
 def list_product(request):
     get_permissions = json.loads(load_permissions(request).content)
@@ -91,3 +86,10 @@ def delete_product(request, id):
             return JsonResponse({"status":"error", "message": "Product not found"}, status=404)
     return JsonResponse({"status":"error", "message": "Invalid request method"}, status=400)
 
+
+def test_render_fleksibel(request):
+    # Cara render module template ini akan memperlambat sedikit prosesnya
+    product = Product.objects.all().values('name', 'barcode', 'price', 'stock')
+    html = render_module_template('product', 'page/list.html', {'products': product})
+    
+    return HttpResponse(html)
