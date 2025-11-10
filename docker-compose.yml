@@ -13,6 +13,7 @@ services:
       DB_HOST: db_engmodule_doni
       DB_PORT: 3306
       ALLOWED_HOSTS: '*'
+      CSRF_TRUSTED_ORIGINS: 'http://localhost:8000,https://hash-doni.tokocoding.com'
     depends_on:
       - db_engmodule_doni
     networks:
