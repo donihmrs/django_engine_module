@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 
 from engine.module_loader import get_available_modules, load_active_modules, settings_app_add_module, settings_app_remove_module, upgrade_module_loader
-from engine.models import Module
+from engine.models.module import Module
 from pathlib import Path 
 
 def reload_modules(request):

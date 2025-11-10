@@ -1,5 +1,5 @@
 from django.contrib import admin
-from engine.models import Module
+from engine.models.module import Module
 
 @admin.register(Module)
 class ModuleAdmin(admin.ModelAdmin):

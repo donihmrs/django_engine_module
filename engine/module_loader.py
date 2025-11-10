@@ -2,6 +2,7 @@ import importlib, os, sys
 from django.core.management import call_command
 from django.conf import settings
 from django.apps import apps, AppConfig
+from django.db.utils import ProgrammingError, OperationalError
 from django.urls import include, path, clear_url_caches
 from pathlib import Path 
 import json
@@ -47,9 +48,8 @@ def get_available_modules():
 def load_active_modules():
     try :
         print("Loading all modules...")
-        from engine.models import Module
-        import sys
-
+        from engine.models.module import Module
+        
         active_modules = Module.objects.filter(is_active=True)
         for mod in active_modules:
             try:
@@ -73,19 +73,28 @@ def load_active_modules():
         reload_dynamic_urls()
 
         reload_templates()
-    except Exception as e:
-        print(f"Error loading modules: {e}")
+    except (ProgrammingError, OperationalError ) as e:
+        print(f"Error Load active balance: {e}")
+        return False
+    except ImportError as e:
+        print(f"Error Load active balance import: {e}")
         return False
 
     return True
 
-def get_dynamic_urls():
+def get_dynamic_urls():    
+    if settings.START_APP_ON_LOAD:
+        print("Initial app loading, setting up installed apps...")
+        
+        apps.set_installed_apps(settings.INSTALLED_APPS)
+        settings.START_APP_ON_LOAD = False
+
     urlpatterns = []
 
     try :
         print("Getting dynamic URLs for active modules...")
 
-        from engine.models import Module
+        from engine.models.module import Module
         active_modules = Module.objects.filter(is_active=True)
 
         for mod in active_modules:
@@ -101,9 +110,10 @@ def get_dynamic_urls():
                 print(f"No urls.py found for module: {mod.slug}")
             except Exception as e:
                 print(f"Error loading {mod.slug}: {e}")
-    except Exception as e:
-        print(f"Error getting dynamic URLs: {e}")
-        urlpatterns = []    
+    except (ProgrammingError, OperationalError ) as e:
+        print(f"Error getting dynamic URLs Programming: {e}")
+    except ImportError as e:
+        print(f"Error getting dynamic URL Import: {e}")
 
     return urlpatterns
 

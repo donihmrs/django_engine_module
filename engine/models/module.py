@@ -9,5 +9,8 @@ class Module(models.Model):
     installed_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        app_label = 'engine'
+
     def __str__(self):
         return f"{self.name} ({'Active' if self.is_active else 'Inactive'})"
